@@ -1,0 +1,37 @@
+{
+  "name": "foodexplorer_api",
+  "version": "1.0.0",
+  "description": "API-FoodExplorer",
+  "main": "index.js",
+  "scripts": {
+    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "dev": "nodemon ./src/server.js",
+    "migrate": "knex migrate:latest",
+    "test": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "FoodExplorer-API"
+  },
+  "keywords": [
+    "glds58221"
+  ],
+  "author": "Gabriel",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.1",
+    "knex": "^2.5.1",
+    "moment": "^2.29.4",
+    "multer": "^1.4.5-lts.1",
+    "pm2": "^5.3.0",
+    "sqlite": "^5.0.1",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
