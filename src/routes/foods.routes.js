@@ -14,6 +14,11 @@ const foodController = new FoodController();
 foodRoutes.use(ensureAuthenticated);
 
 foodRoutes.post("/", upload.single("avatarFood"), foodController.create);
+foodRoutes.get("/", foodController.index);
+foodRoutes.get("/:id", foodController.show);
+foodRoutes.put("/:id", upload.single("avatarFood"), foodController.update);
+foodRoutes.delete("/:id", foodController.delete);
+
 
 
 module.exports = foodRoutes;

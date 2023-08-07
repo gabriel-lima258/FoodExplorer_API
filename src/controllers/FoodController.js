@@ -34,16 +34,46 @@ class FoodController {
         return response.status(201).json("Prato adicionado!");
     }
 
-    async show(request, response){
-        const { id } = request.params;
+    async index(request, response){
+        const { title, ingredients } = request.query;
 
-        const food = await knex("foods").where({id}).first();
-        const ingredients = await knex("ingredients").where({food_id: id}).orderBy("name");
+        let foods;
 
-        return response.json({
-            ...food,
-            ingredients
-        });
+        if (ingredients){
+
+            const filterIngredients = ingredients.split(',').map(ingredient => ingredient.thim());
+
+            foods = await knex("ingredients")
+            .select([
+            "foods.id",
+            "foods.title",
+            "foods.description",
+            "foods.category",
+            "foods.price",
+            "foods.avatarFood",
+            ])
+            .whereLike("foods.title", `%${title}`)
+            .whereIn("name", filterIngredients)
+            .innerJoin("foods", "foods.id", "ingredients.food_id")
+            .groupBy("foods.id")
+            .orderBy("foods.title")
+        } else {
+            foods = await knex("foods")
+            .whereLike("title", `%${title}`)
+            .orderBy("title")
+        }
+
+        const foodsIngredients = await knex("ingredients");
+        const foodsWithIngredients = foods.map(food => {
+            const foodIngredient = foodsIngredients.filter(ingredient => ingredient.food_id === food.id);
+
+            return {
+                ...food,
+                ingredients: foodIngredient
+            }
+        })
+
+        return response.status(201).json(foodsWithIngredients);
     }
 
     async update(request, response){
