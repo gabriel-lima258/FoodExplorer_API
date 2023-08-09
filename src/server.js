@@ -17,7 +17,7 @@ migrationRun();
 
 const app = express();
 
-app.use("/files", express.static(uploadConfig.UPLOAD_FOLDER)); // buscando pelo que está dentro da pasta de uploads, na rota /files busco isso através do método static do express
+app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER)); // buscando pelo que está dentro da pasta de uploads, na rota /files busco isso através do método static do express
 
 app.use(cors()); // para que o backend se integre com o frontend
 
@@ -42,7 +42,7 @@ app.use(( error, request, response, next ) => { //Capturando o erro, a requisiç
         message: "Internal server error"
     });
     
-})
+});
 
 
 const PORT = process.env.PORT || 3333;

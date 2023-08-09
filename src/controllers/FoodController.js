@@ -7,32 +7,52 @@ class FoodController {
 
     async create(request, response){
         const {title, description, price, category, ingredients} = request.body;
-        
-        const { filename: avatarFood } = request.file;
 
-        const filename = await diskStorage.saveFile(avatarFood);
+        const ifFoodExists = await knex("foods").where({title}).first();
+
+        if(ifFoodExists){
+            throw new AppError("Esta comida já existe!", 401);
+        }
+
+        const foodFilename = request.file.filename;
+        const filename = await diskStorage.saveFile(foodFilename);
 
         const [food_id] = await knex("foods").insert({
+            avatarFood: filename,
             title,
             description,
             price,
-            category,
-            avatarFood: filename,
+            category
         });
 
-        const ingredientsArray = ingredients.split(',');
+        const hasOnlyOneIngredient = typeof(ingredients) === "string";
 
-        const ingredientsInsert = ingredientsArray.map(ingredient => {
-            food_id,
-            ingredient
+        let ingredientsInsert
+
+        if (hasOnlyOneIngredient) {
+        ingredientsInsert = {
+            name: ingredients,
+            food_id
+        }
+
+        } else if (ingredients.length > 1) {
+        ingredientsInsert = ingredients.map(ingredient => {
+            return {
+            name : ingredient,
+            food_id
+            }
         });
 
-        await knex("ingredients").insert(ingredientsInsert).groupBy(food_id).orderBy("name"); 
+        } else {
+        return 
+        }
+        
+            await knex("ingredients").insert(ingredientsInsert); 
 
-        // Inserindo dentro da tabela ingredientes todas as condições
-       
-        return response.status(201).json("Prato adicionado!");
-    }
+            // Inserindo dentro da tabela ingredientes todas as condições
+        
+            return response.status(201).json("Prato adicionado!");
+        }
 
     async index(request, response){
         const { title, ingredients } = request.query;
@@ -65,6 +85,7 @@ class FoodController {
 
         const foodsIngredients = await knex("ingredients");
         const foodsWithIngredients = foods.map(food => {
+            
             const foodIngredient = foodsIngredients.filter(ingredient => ingredient.food_id === food.id);
 
             return {
@@ -80,15 +101,11 @@ class FoodController {
         const {title, description, price, category, ingredients} = request.body;
         const { id } = request.params;
 
-        const { filename: imageFilename } = request.file;
-
         const food = await knex("foods").where({id}).first();
-        
-        if (food.avatarFood){
-            await diskStorage.deleteFile(food.avatarFood);
-        }
 
-        const filename = await diskStorage.saveFile(imageFilename);
+        if(!food){
+            throw new AppError("Prato não existe!", 401);
+        }
 
         food.avatarFood = filename;
         food.title = title ?? food.title;
@@ -99,18 +116,33 @@ class FoodController {
         await knex("foods").where({ id }).update(food);
         await knex("foods").where({ id }).update('updated_at', knex.fn.now());
 
-        const ingredientsArray = ingredients.split(',');
+        const hasOnlyOneIngredient = typeof(ingredients) === "string";
 
-        const ingredientsInsert = ingredientsArray.map(ingredient => {
-            food_id,
-            ingredient
+        let ingredientsInsert;
+
+        if (hasOnlyOneIngredient) {
+        ingredientsInsert = {
+            name: ingredients,
+            food_id: food.id
+        }
+
+        } else if (ingredients.length > 1) {
+        ingredientsInsert = ingredients.map(ingredient => {
+            return {
+            name : ingredient,
+            food_id: food.id
+            }
         });
 
-        await knex("ingredients").where({food_id: id}).delete();
-        await knex("ingredients").where({food_id: id}).insert(ingredientsInsert);
+        } else {
+        return 
+        }
 
+        await knex("ingredients").where({food_id: id}).delete()
+        await knex("ingredients").insert(ingredientsInsert)
+        
         return response.status(201).json("Prato atualizado!");
-    }
+}
 
     async delete(request, response){
         const { id } = request.params;

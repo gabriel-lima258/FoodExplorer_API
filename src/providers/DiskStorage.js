@@ -1,6 +1,6 @@
 //Uma das funcionalidades da pasta 'provider' a qual guarda algumas funcionalidades
 
-const fs = require("fs"); //importando para lidar com manipulação de arquivos
+const fs = require('fs'); //importando para lidar com manipulação de arquivos
 const path = require('path'); //importando para ajudar na navegação entre pastas
 const uploadConfig = require("../configs/upload"); //importando o arquivo 'uploadConfig.js' que contém as pastas temporária e definitiva, e o multer
 
@@ -22,7 +22,7 @@ class DiskStorage { //classe com as duas funções de save e delete / mesmo nome
     try {
       await fs.promises.stat(filePath); //usa-se a função stat do fs para buscar o arquivo e mostrar seu estado
     } catch {
-      return //uso um return se houver erro para parar minha função sem crashar.
+      return; //uso um return se houver erro para parar minha função sem crashar.
     }
 
     await fs.promises.unlink(filePath); //usa-se a função do fs unlink para deletar o arquivo
