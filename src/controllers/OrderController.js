@@ -12,17 +12,17 @@ class OrderController {
             user_id
         })
 
-        const orderInsert = orders.map(oder => {
+        const orderInsert = orders.map(order => {
 
             return {
-                title: orderInsert.title,
-                quantity: orderInsert.quantity,
-                order_id,
-                food_id: order_id
+                title: order.title,
+                quantity: order.quantity,
+                order_id: order.id,
+                payment_id
             }
         });
 
-        await knex("orderItems").insert(orderInsert);
+        await knex("cartItems").insert(orderInsert);
         return response.status(201).json();
     }
 
@@ -36,7 +36,7 @@ class OrderController {
 
     async index(request, response){
         const allOrdersPayment = await knex("payment");
-        const orders = await knex("orderItems");
+        const orders = await knex("cartItems");
 
         const requestOrders = allOrdersPayment.map(payment => {
             const order = orders.filter(order => order.order_id === payment.id)
@@ -54,7 +54,7 @@ class OrderController {
         const { id } = request.params;
 
         const payment = await knex("payment").where({ user_id: id}).first();
-        const orderItems = await knex("orderItems").where({ order_id: id});
+        const orderItems = await knex("cartItems").where({ order_id: id});
 
         return response.status(201).json({
             ...payment,

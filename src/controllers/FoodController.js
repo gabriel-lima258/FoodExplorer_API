@@ -52,7 +52,7 @@ class FoodController {
             // Inserindo dentro da tabela ingredientes todas as condições
         
             return response.status(201).json("Prato adicionado!");
-        }
+    }
 
     async index(request, response){
         const { title, ingredients } = request.query;
@@ -106,8 +106,7 @@ class FoodController {
         if(!food){
             throw new AppError("Prato não existe!", 401);
         }
-
-        food.avatarFood = filename;
+ 
         food.title = title ?? food.title;
         food.description = description ?? food.description;
         food.category = category ?? food.category;
@@ -139,10 +138,10 @@ class FoodController {
         }
 
         await knex("ingredients").where({food_id: id}).delete()
-        await knex("ingredients").insert(ingredientsInsert)
+        await knex("ingredients").where({food_id: id}).insert(ingredientsInsert)
         
         return response.status(201).json("Prato atualizado!");
-}
+    }
 
     async delete(request, response){
         const { id } = request.params;

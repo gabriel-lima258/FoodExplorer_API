@@ -9,4 +9,4 @@ exports.up = knex => knex.schema.createTable("cartItems", table => {
     table.timestamp("created_at").default(knex.fn.now());
   });
   
-  exports.down = knex => knex.schema.dropTable("orderItems");
+  exports.down = knex => knex.schema.dropTable("cartItems");
