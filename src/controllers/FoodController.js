@@ -72,14 +72,14 @@ class FoodController {
             "foods.price",
             "foods.avatarFood",
             ])
-            .whereLike("foods.title", `%${title}`)
+            .whereLike("foods.title", `%${title}%`)
             .whereIn("name", filterIngredients)
             .innerJoin("foods", "foods.id", "ingredients.food_id")
             .groupBy("foods.id")
             .orderBy("foods.title")
         } else {
             foods = await knex("foods")
-            .whereLike("title", `%${title}`)
+            .whereLike("title", `%${title}%`)
             .orderBy("title")
         }
 
